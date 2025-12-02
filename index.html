@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orçamentos - Atualizado</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --navy: #04293A; /* sidebar */
+      --blue: #0E6EB8; /* top bar */
+      --accent: #1D9A6C; /* green button */
+      --muted: #F3F6F8;
+      --panel: #ffffff;
+      --text: #243645;
+      --soft: #EEF3F7;
+      --border: #d7dbe0;
+      
+      /* Novas cores para Etapa 4 */
+      --green-bg: #D1FAE5;
+      --green-text: #065F46;
+      --green-num: #047857;
+    }
+    *{box-sizing:border-box;font-family: 'Poppins', sans-serif}
+    body{margin:0;background:var(--soft);color:var(--text);font-size: 14px;}
+
+    /* Top bar and sidebar layout */
+    .topbar{height:56px;background:var(--blue);display:flex;align-items:center;padding:0 18px;color:#fff}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:600}
+    .layout{display:flex;min-height:calc(100vh - 56px)}
+    .sidebar{width:220px;background:var(--navy);padding:20px;color:#fff;flex-shrink: 0;}
+    .sidebar .logo{background:#fff;border-radius:8px;padding:8px 12px;color:var(--navy);font-weight:700;margin-bottom:18px}
+    .sidebar nav a{display:block;color:#cfe9ff;padding:8px 6px;text-decoration:none;border-radius:6px;margin-bottom:6px;cursor:pointer; transition:0.2s}
+    .sidebar nav a:hover{background:rgba(255,255,255,0.1)}
+    .content{flex:1;padding:28px; overflow-x: hidden;}
+
+    /* Card Layout */
+    .card{background:var(--panel);border-radius:10px;padding:26px;border:1px solid var(--border);box-shadow:0 6px 18px rgba(10,20,30,0.04)}
+
+    h1.title{text-align:center;color:#7e8b90;margin-top:6px;margin-bottom:18px;font-weight:600;letter-spacing:1px; font-size: 18px;}
+    .divider{height:4px;width:80px;background:linear-gradient(90deg,var(--navy),var(--blue));margin:8px auto 26px;border-radius:4px}
+
+    /* Tabs */
+    .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:24px; flex-wrap: wrap;}
+    .tab{padding:10px 16px;cursor:pointer;border-radius:6px 6px 0 0;background:transparent;color:#64748b;font-weight:500; font-size: 13px; transition: 0.2s;}
+    .tab:hover{background: #f1f5f9;}
+    .tab.active{background:#fff;color:var(--navy);border:1px solid var(--border);border-bottom:1px solid #fff; font-weight: 600; position: relative; top: 1px;}
+
+    .tab-content{padding-top:6px}
+    .tab-panel{display:none; animation: fadeIn 0.3s ease;}
+    .tab-panel.active{display:block;}
+
+    @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)}}
+
+    /* Utils */
+    .row{display:flex;gap:20px; flex-wrap: wrap;}
+    .col{flex:1; min-width: 250px;}
+    .form-group{margin-bottom:16px}
+    label{display:block;font-size:12px;font-weight: 600; margin-bottom:6px;color:#4b5b63}
+    input[type=text], input[type=date], input[type=number], select{width:100%;padding:10px 12px;border-radius:6px;border:1px solid var(--border);background:#fff; font-size: 13px; outline: none;}
+    input:focus, select:focus{border-color: var(--blue); box-shadow: 0 0 0 3px rgba(14,110,184,0.1);}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:6px;border:0;cursor:pointer;font-weight: 500; font-size: 13px; transition: 0.2s;}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-primary:hover{background:#157a55}
+    .btn-ghost{background:transparent;border:1px solid var(--border); color: var(--text)}
+    .btn-ghost:hover{background:#f8fafc}
+    .btn-add{background: var(--blue); color: white; width: 42px; padding: 0;}
+
+    /* Tables */
+    .table-responsive {overflow-x: auto;}
+    table{width:100%;border-collapse:collapse;margin-top:10px; white-space: nowrap;}
+    th, td{padding:10px 12px;border-bottom:1px solid #eef2f5;text-align:left;font-size:13px}
+    th{background:#f8fafc;color:#475569;font-weight:600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;}
+    tr:hover td{background: #f1f5f9;}
+
+    /* --- CSS NOVO PARA O COMBOBOX DA TABELA --- */
+    table select {
+        width: 100%;
+        padding: 6px 8px; /* Mais compacto que o input normal */
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background-color: #fff;
+        font-size: 12px;
+        color: #334155;
+        cursor: pointer;
+        min-width: 140px; /* Garante largura mínima para ler o texto */
+    }
+    table select:hover { border-color: var(--blue); }
+    table select:focus { border-color: var(--blue); outline: none; box-shadow: 0 0 0 2px rgba(14,110,184,0.1); }
+
+    .small{font-size:12px;color:#64748b}
+    .mt-4{margin-top:16px} .mt-8{margin-top:32px} .mb-4{margin-bottom:16px}
+
+    /* Etapa 3 (Planilha) */
+    .spreadsheet-container {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        /* Scrollbar suave */
+        scrollbar-width: thin; 
+    }
+    .spreadsheet-container th {
+        background: #e2e8f0;
+        border-right: 1px solid #cbd5e1;
+    }
+    .spreadsheet-container td {
+        border-right: 1px solid #f1f5f9;
+        vertical-align: middle; /* Centraliza o select na altura */
+    }
+
+    /* Etapa 4 (Dashboard) */
+    .kpi-row { display: flex; gap: 16px; margin-bottom: 30px; }
+    .kpi-card {
+        flex: 1; background-color: var(--green-bg); border-radius: 8px; padding: 20px;
+        display: flex; flex-direction: column; justify-content: space-between; min-height: 120px;
+    }
+    .kpi-title { color: var(--green-text); font-size: 13px; font-weight: 600; }
+    .kpi-value { color: var(--green-num); font-size: 36px; font-weight: 700; margin-top: 10px; }
+    
+    .section-title {
+        font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 12px;
+        border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; display: inline-block;
+    }
+    .section-title.underline-blue { border-color: #93c5fd; }
+
+    .agenda-box {
+        border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center;
+        background: #fff; display: flex; justify-content: center; align-items: center; min-height: 100px;
+    }
+    .agenda-item { display: flex; flex-direction: column; align-items: center; }
+    .agenda-date { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+    .agenda-qty { font-size: 18px; font-weight: 700; color: var(--text); }
+
+    .order-header {
+        margin-top: 40px; font-size: 18px; color: #94a3b8; font-weight: 500;
+        margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 20px;
+    }
+    .warning-badge {
+        background: #f1f5f9; color: #475569; padding: 6px 12px; border-radius: 4px;
+        font-size: 12px; display: inline-block; margin-bottom: 20px;
+    }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .full-width { grid-column: span 2; }
+    .input-group { display: flex; gap: 8px; }
+
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">PIERSERV — <span style="opacity:.8;font-weight:400;margin-left:5px">Orçamentos</span></div>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo">PIERSERV</div>
+      <nav>
+        <a>Início</a>
+        <a>Produtos</a>
+        <a>Pedidos</a>
+        <a>Cadastros</a>
+        <a>Dashboards</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="card">
+        <h1 class="title">ORÇAMENTOS / NOVO ORÇAMENTO</h1>
+        <div class="divider"></div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('t1', this)">Etapa 1: Importação da Grade</div>
+          <div class="tab" onclick="switchTab('t2', this)">Etapa 2: Orçamento — Frete e Prazos</div>
+          <div class="tab" onclick="switchTab('t3', this)">Etapa 3: Definição de Saldos</div>
+          <div class="tab" onclick="switchTab('t4', this)">Etapa 4: Finalização e Pedido</div>
+        </div>
+
+        <div class="tab-content">
+          
+          <section id="t1" class="tab-panel active">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <button class="btn btn-ghost">Baixar Arquivo Padrão</button>
+                </div>
+                <div class="form-group" style="border:2px dashed var(--border); padding:20px; border-radius:8px; text-align:center; background:var(--muted)">
+                  <strong>Escolher arquivo</strong>
+                  <div class="small muted">Arraste o arquivo .xlsx ou clique para selecionar</div>
+                  <button class="btn btn-primary mt-4" id="importBtn">Simular Importação</button>
+                </div>
+                <div class="small mt-8">Pré-visualização da grade importada</div>
+                <table id="previewTable">
+                  <thead>
+                    <tr><th>Código SAP</th><th>Descrição</th><th>Quantidade</th><th>Destino</th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="col" style="max-width:300px;">
+                <div class="card" style="padding:16px; background:#f8fafc; border:none;">
+                  <div class="small" style="font-weight:600; margin-bottom:10px">Parâmetros</div>
+                  <div class="form-group"><label><input type="checkbox" /> Consolidar destinatário</label></div>
+                  <div class="form-group"><label><input type="checkbox" /> Não validar saldo - Simulação</label></div>
+                  <div class="form-group"><label><input type="checkbox" /> Consolidar frete</label></div>
+                  <label>Data limite para entrega</label>
+                  <input type="date" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="t2" class="tab-panel">
+            <div style="display:flex; justify-content:space-between; align-items:end; margin-bottom:20px;">
+              <div>
+                <label>Selecione o Orçamento:</label>
+                <select style="width:200px"><option>Orçamento 001</option></select>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button class="btn btn-primary">Menor Prazo</button>
+                <button class="btn btn-ghost">Menor Frete</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <button class="btn btn-ghost" style="font-size:12px; margin-bottom:10px">Exportar Excel</button>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Seq</th><th>Destinatário</th><th>Cidade</th><th>UF</th><th>Peso</th><th>Valor NF</th>
+                    <th>Aéreo Conven</th><th>Aéreo Próx Dia</th><th>Correios PAC</th><th>Correios Sedex</th><th>Rodoviário</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td><td>PORTOEXPRESS</td><td>Itajaí</td><td>SC</td>
+                    <td>22,6kg</td><td>R$280,85</td>
+                    <td><input type="checkbox"> R$440</td>
+                    <td><input type="checkbox"> R$566</td>
+                    <td><input type="checkbox"> R$369</td>
+                    <td><input type="checkbox"> R$614</td>
+                    <td><input type="checkbox" checked> R$52</td>
+                  </tr>
+                  <tr>
+                    <td>2</td><td>SANCA</td><td>Barueri</td><td>SP</td>
+                    <td>22,6kg</td><td>R$20,85</td>
+                    <td><input type="checkbox"> R$40</td>
+                    <td><input type="checkbox"> R$66</td>
+                    <td><input type="checkbox"> R$69</td>
+                    <td><input type="checkbox"> R$14</td>
+                    <td><input type="checkbox" checked> R$52</td>
+                  </tr>
+                  <tr>
+                    <td>3</td><td>MATRIZ</td><td>Tambore</td><td>SP</td>
+                    <td>22,6kg</td><td>R$80,85</td>
+                    <td><input type="checkbox"> R$40</td>
+                    <td><input type="checkbox"> R$66</td>
+                    <td><input type="checkbox"> R$69</td>
+                    <td><input type="checkbox"> R$14</td>
+                    <td><input type="checkbox" checked> R$52</td>
+                  </tr>  
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="t3" class="tab-panel">
+            <div class="row">
+              <div class="col">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <div class="small">Distribuição de Saldo</div>
+                </div>
+
+                <div class="table-responsive spreadsheet-container">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>SAP</th>
+                        <th>Descrição</th>
+                        <th style="min-width:180px">Depto_Area</th>
+                        <th style="min-width:140px">Depto_SubArea</th>
+                        <th style="min-width:160px">Depto_SubArea2</th>
+                        <th style="min-width:140px">Campanha_Item</th>
+                        <th>Solicitado</th>
+                      </tr>
+                    </thead>
+                    <tbody id="spreadsheetBody">
+                      <tr>
+                        <td>117243</td><td>CAMISA BRIGADA</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option><option>MKT</option></select></td>
+                        <td><select><option selected>PLANNING</option><option>EXECUÇÃO</option></select></td>
+                        <td><select><option selected>KSME PLATAFORMA</option><option>INOVAÇÕES</option></select></td>
+                        <td><select><option selected>INSTITUCIONAL</option><option>PROMO</option></select></td>
+                        <td>37</td>
+                      </tr>
+                      <tr>
+                        <td>168892</td><td>ABRIDOR FERRO HEINEKEN F1</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option><option>MKT</option></select></td>
+                        <td><select><option selected>PLANNING</option></select></td>
+                        <td><select><option selected>KSME PLATAFORMA</option></select></td>
+                        <td><select><option selected>INSTITUCIONAL</option></select></td>
+                        <td>7</td>
+                      </tr>
+                      <tr>
+                        <td>1200168893</td><td>BLUSA UNIFORME AZUL HNK M</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option></select></td>
+                        <td><select><option selected>PLANNING</option></select></td>
+                        <td><select><option selected>KSME PLATAFORMA</option></select></td>
+                        <td><select><option selected>INSTITUCIONAL</option></select></td>
+                        <td>1</td>
+                      </tr>
+                      <tr>
+                        <td>717635</td><td>CAMISETA AMSTEL LAGER G</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option></select></td>
+                        <td><select><option selected>PLANNING</option></select></td>
+                        <td><select><option selected>KSME PLATAFORMA</option></select></td>
+                        <td><select><option selected>INSTITUCIONAL</option></select></td>
+                        <td>19</td>
+                      </tr>
+                      <tr>
+                        <td>717636</td><td>SHOULDER BAG TROPICAE</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option></select></td>
+                        <td><select><option selected>PLANNING</option></select></td>
+                        <td><select><option selected>KSME PLATAFORMA</option></select></td>
+                        <td><select><option selected>INSTITUCIONAL</option></select></td>
+                        <td>209</td>
+                      </tr>
+                      <tr>
+                        <td>12001718250</td><td>LONG NECK SOL</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option></select></td>
+                        <td><select><option selected>PLANNING</option></select></td>
+                        <td><select><option selected>INOVAÇÕES</option><option>KSME</option></select></td>
+                        <td><select><option selected>INOVAÇÕES</option><option>INSTITUCIONAL</option></select></td>
+                        <td>160</td>
+                      </tr>
+                      <tr>
+                        <td>718265</td><td>GREEN STAGE</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option></select></td>
+                        <td><select><option selected>PLANNING</option></select></td>
+                        <td><select><option selected>KSME PLATAFORMA</option></select></td>
+                        <td><select><option selected>INSTITUCIONAL</option></select></td>
+                        <td>2</td>
+                      </tr>
+                      <tr>
+                        <td>12001718290</td><td>COPO HEINEKEN 1017</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option></select></td>
+                        <td><select><option selected>PLANNING</option></select></td>
+                        <td><select><option selected>KSME PLATAFORMA</option></select></td>
+                        <td><select><option selected>INSTITUCIONAL</option></select></td>
+                        <td>4</td>
+                      </tr>
+                       <tr>
+                        <td>12001718324</td><td>ESTEIRA HEINEKEN 1017</td>
+                        <td><select><option selected>TRADE ON + OFF CORP</option></select></td>
+                        <td><select><option selected>PLANNING</option></select></td>
+                        <td><select><option selected>KSME PLATAFORMA</option></select></td>
+                        <td><select><option selected>INSTITUCIONAL</option></select></td>
+                        <td>974</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="mt-8" style="text-align:right">
+                  <button class="btn btn-primary" onclick="switchTab('t4', document.querySelectorAll('.tab')[3])">Confirmar e Avançar</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+
+          <section id="t4" class="tab-panel">
+            
+            <h2 style="font-size:18px; font-weight:500; margin-bottom:20px; color:#334155;">Planejamento</h2>
+
+            <div class="kpi-row">
+              <div class="kpi-card">
+                <span class="kpi-title">Linhas Contratadas</span>
+                <span class="kpi-value">676</span>  
+              </div>
+              <div class="kpi-card">
+                <span class="kpi-title">Linhas na Grade</span>
+                <span class="kpi-value">2</span>
+              </div>
+              <div class="kpi-card">
+                <span class="kpi-title">Linhas em Produção</span>
+                <span class="kpi-value">1</span>
+              </div>
+            </div>
+
+            <div class="mb-8">
+              <div class="section-title underline-blue">Divisão das Linhas</div>
+              <div class="form-group" style="max-width: 400px; margin-top:10px;">
+                <label>Informe (se houver) o tipo de prioridade:</label>
+                <select>
+                  <option value="">Selecione uma opção</option>
+                  <option value="1">Priorizar por Região</option>
+                  <option value="2">Priorizar envio para CDA</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-8">
+              <div class="section-title underline-blue">Agenda de Separação</div>
+              <div class="agenda-box mt-4">
+                <div class="agenda-item">
+                  <span class="agenda-date">01/12</span>
+                  <span class="agenda-qty">2</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="order-header">
+              Orçamento Nº: 2025HNK64565.0
+            </div>
+
+            <div class="warning-badge">
+              Nenhum critério de priorização foi aplicado.
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Campanha</label>
+                <div class="input-group">
+                  <select><option>Selecione...</option></select>
+                  <button class="btn btn-add">+</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Requisitante</label>
+                <select><option>Selecione...</option></select>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Operação Fiscal</label>
+                <select style="background:#eef3f7"><option>PROMOCIONAL</option></select>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Natureza da Operação</label>
+                <select><option>949 - OUTRA SAÍDA MERC. OU PREST.SERV. NÃO ESPECIFICADO</option></select>
+              </div>
+            </div>
+
+            <div class="mt-8">
+              <button class="btn btn-primary" onclick="alert('Pedido 2025HNK64565.0 gerado com sucesso!')">Gerar Pedido</button>
+            </div>
+
+          </section>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+  // Função para troca de abas
+  function switchTab(tabId, element) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    
+    element.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+    setTimeout(() => document.getElementById(tabId).classList.add('active'), 10);
+  }
+
+  // Inicializa primeira aba
+  document.getElementById('t1').style.display = 'block';
+
+  document.getElementById('importBtn').addEventListener('click', ()=>{
+    const tbody = document.querySelector('#previewTable tbody'); 
+    tbody.innerHTML='';
+    const sample = [
+      {sap: '117243', desc: 'CAMISA BRIGADA', qty: 37, dest: 'SP - Capital'},
+      {sap: '717636', desc: 'SHOULDER BAG', qty: 209, dest: 'RJ - Capital'},
+      {sap: '12001718', desc: 'LONG NECK SOL', qty: 160, dest: 'MG - Interior'}
+    ];
+    sample.forEach(row=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${row.sap}</td><td>${row.desc}</td><td>${row.qty}</td><td>${row.dest}</td>`;
+      tbody.appendChild(tr);
+    });
+    alert('Importação realizada! Avance para as próximas etapas.');
+  });
+</script>
+</body>
+</html>
